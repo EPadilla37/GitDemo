@@ -1,49 +1,42 @@
-document.addEventListener('DOMContentLoaded', function(){
-    let todoInput = document.querySelector('.input'); 
-    let submitBtn = document.querySelector('.submit-btn');
-    let olList = document.querySelector('#list');  
+const list = document.getElementById('list'); 
+const form = document.getElementById('TodoForm'); 
 
+const savedTasks = JSON.parse(localStorage.getItem("todos")) || [];
 
-    submitBtn.addEventListener('click', function(){
-        let newLi = document.createElement('li');
-        let inputText = todoInput.value; 
-        newLi.innerText = inputText; 
-        newLi.classList.add('list-item');
-        olList.appendChild(newLi);
+for(let i = 0; i < savedTasks.length; i++){ 
+    let currentTodo = document.createElement("li"); 
+    currentTodo.classList.add("list-task"); 
+    currentTodo.innerText = savedTasks[i].task; 
+    currentTodo.isCompleted = savedTasks[i].isCompleted ? true : false; 
 
-        let exitBtn = document.createElement('button'); 
-        exitBtn.classList.add("exit-btn"); 
-        exitBtn.innerText = "X"
+    if(currentTodo.isCompleted){
+        currentTodo.style.textDecoration = "line-through"; 
+    }
+    list.appendChild(currentTodo); 
+}
 
-        newLi.appendChild(exitBtn);
+form.addEventListener("submit", function(e){
+    e.preventDefault(); 
+    let currentTodo = document.createElement("li"); 
+    let taskValue = document.getElementById("task").value; 
+    currentTodo.innerText = taskValue; 
+    currentTodo.isCompleted = false; 
+    form.reset(); 
+    list.appendChild(currentTodo); 
 
-
-        todoInput.value = "";
-    })
-
-    olList.addEventListener('click', function(e){
-        let target = e.target.tagName;
-        console.log(target);
-        if(target === "LI"){
-            e.target.style.textDecoration = "line-through";
-        }else if(target === "BUTTON "){
-            e.target.parentNode.remove();
-        }
-         
-    })
+    savedTasks.push({task: currentTodo.innerText, isCompleted: false}); 
+    localStorage.setItem("todos", JSON.stringify(savedTasks)); 
+    console.log(savedTasks);
 })
 
+list.addEventListener("click", function(e){ 
+    let itemClicked = e.target; 
 
-function testFunction(){
-    const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
-    for(let i =0; i <savedTodos.length; i++){
-        let newTodo = document.createElement('li'); 
-        newTodo.innerText = savedTodos[i].task;
-        newTodo.isCompleted = savedTodos[i].isCompleted ? true:false;
-
-        if(newTodo.isCompleted){
-            newTodo.style.textDecoration = "line-through"; 
-        }
-        todoList.appendChild(newTodo);
+    if(!itemClicked.isCompleted){
+        itemClicked.style.textDecoration = "line-through";
+        itemClicked.isCompleted = true; 
+    } else{ 
+        itemClicked.style.textDecoration = "none"; 
+        itemClicked.isCompleted = false; 
     }
-}
+})
